@@ -1,8 +1,11 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    esp-dev.url = "github:knarkzel/nixpkgs-esp-dev";
     flake-utils.url = "github:numtide/flake-utils";
+    esp-dev = {
+      url = "github:knarkzel/nixpkgs-esp-dev";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     rust = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,6 +28,11 @@
             extensions = ["rust-src"];
           })
         ];
+
+        shellHook = ''
+          export LIBCLANG_PATH="${pkgs.libclang.lib}/lib"
+          export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.libxml2 pkgs.zlib pkgs.stdenv.cc.cc.lib ]}"
+        '';
       };
     });
 }
